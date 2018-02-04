@@ -6,7 +6,6 @@ const secret = require('../config').secret;
 //route middleware to handle decoding JTWs - we will have to config types (required and optional)
 
 function getTokenFromHeader(req) {
-  console.log('AUTH::::: ', req.headers.authorization)
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') {
     return req.headers.authorization.split(' ')[1];
   }

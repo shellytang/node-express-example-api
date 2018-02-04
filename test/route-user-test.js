@@ -203,12 +203,30 @@ describe('User Routes', function() {
         });
     });
 
-    it('should return a user body', done => {
-      this.tempToken = tempToken;
+    it('should return a user body with status 200', done => {
       request.get(`${url}/api/user`)
-        .set({Authorization: `Token ${this.tempToken}`})
+        .set({Authorization: `Token ${tempToken}`})
         .end((err, res) => {
           expect(res.status).to.equal(200);
+          expect(res.body.user.email).to.equal(exampleUser.user.email);
+          expect(res.body.user.username).to.equal(exampleUser.user.username);
+          expect(res.body.user.token).to.equal(tempToken);
+          done();
+        });
+    });
+    it('should return a 401 error with invalid credentials', done => {
+      request.get(`${url}/api/user`)
+        .set({Authorization: `Token ${tempToken}123`})
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          done();
+        });
+    });
+    it('should return a 404 error for an unregistered route', done => {
+      request.get(`${url}/api/userss`)
+        .set({ Authorization: `Token ${tempToken}123` })
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
           done();
         });
     });
