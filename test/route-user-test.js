@@ -180,4 +180,38 @@ describe('User Routes', function() {
         });
     });
   });
+
+  describe('testing GET /api/user', function() {
+    let tempToken;
+    let tempUser;
+    beforeEach(done => {
+      let user = new User();
+      user.username = exampleUser.user.username;
+      user.email = exampleUser.user.email;
+      user.setPassword(exampleUser.user.password);
+      user.save()
+        .then(user => {
+          tempUser = user;
+          return user.generateJWT();
+        })
+        .then(token => {
+          tempToken = token;
+          done();
+        })
+        .catch(() => {
+          done();
+        });
+    });
+
+    it('should return a user body', done => {
+      this.tempToken = tempToken;
+      request.get(`${url}/api/user`)
+        .set({Authorization: `Token ${this.tempToken}`})
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          done();
+        });
+    });
+  });
+
 });
