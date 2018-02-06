@@ -183,7 +183,6 @@ describe('User Routes', function() {
 
   describe('testing GET /api/user', function() {
     let tempToken;
-    let tempUser;
     beforeEach(done => {
       let user = new User();
       user.username = exampleUser.user.username;
@@ -191,7 +190,6 @@ describe('User Routes', function() {
       user.setPassword(exampleUser.user.password);
       user.save()
         .then(user => {
-          tempUser = user;
           return user.generateJWT();
         })
         .then(token => {
@@ -230,6 +228,62 @@ describe('User Routes', function() {
           done();
         });
     });
+  });
+
+  describe('testing PUT /api/user', function() {
+    let tempToken;
+    beforeEach(done => {
+      let user = new User();
+      user.username = exampleUser.user.username;
+      user.email = exampleUser.user.email;
+      user.setPassword(exampleUser.user.password);
+      user.save()
+        .then(user => {
+          return user.generateJWT();
+        })
+        .then(token => {
+          tempToken = token;
+          done();
+        })
+        .catch(() => {
+          done();
+        });
+    });
+
+    let updatedUser = {
+      user: {
+        username: 'test2',
+        password: 'password12345',
+        email: 'shellytest2@email.com',
+        bio: 'i like food',
+        image: 'https://i.stack.imgur.com/xHWG8.jpg'
+      },
+    };
+
+    it('should return an updated user with status 200', done => {
+      request.put(`${url}/api/user`)
+        .send(updatedUser)
+        .set({Authorization: `Token ${tempToken}`})
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.user.username).to.equal(updatedUser.user.username);
+          expect(res.body.user.email).to.equal(updatedUser.user.email);
+          expect(res.body.user.bio).to.equal(updatedUser.user.bio);
+          expect(res.body.user.image).to.equal(updatedUser.user.image);
+          done();
+        });
+    });
+
+    it('should return status 401 for unauthorized user/bad token', done => {
+      request.put(`${url}/api/user`)
+        .send(updatedUser)
+        .set({Authorization: 'Token 12345'})
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          done();
+        });
+    });
+
   });
 
 });

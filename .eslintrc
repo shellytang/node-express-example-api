@@ -7,10 +7,6 @@
         "allowTemplateLiterals": true
       }
     ],
-    "comma-dangle": [
-      "error",
-      "always-multiline"
-    ],
     "no-console": "off",
     "indent": [
       "error",
